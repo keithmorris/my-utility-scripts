@@ -1,0 +1,75 @@
+#!/usr/bin/env node
+var	argv = require('minimist')(process.argv.slice(2), {
+		alias: {
+			parent: 'p',
+			webroot: 'w',
+			index: 'i'
+		},
+		default: {
+			parent: '/Users/kmorris/Sites',
+			webroot: '',
+			index: false
+		}
+	}),
+	fs = require('node-fs'),
+	exec = require('child_process').exec;
+
+if (!argv._.length) {
+	console.log([
+		"  \nUsage: newsite www.localtest.com [--webroot 'public' --parent '/var/www' --index] \n",
+		"  dot-separated domain name (e.g. www.example.com) is the only required parameter\n",
+		"  Optional Flags:",
+		"    -w, --webroot [value]    The subdirectory to use as webroot. Defaults to empty (The same as app directory)",
+		"    -p, --parent [value]     The directory that will be the parent of app directory (e.g. /Users/name/Sites)",
+		"                             This defaults to /Users/kmorris/Sites",
+		"    -i, --index              If set, this will generate a simple index.php file with phpinfo();\n"
+	].join("\n"));
+	process.exit();
+}
+
+var parent = argv.parent,
+	domain = argv._[0],
+	domainReverse = domain.split('.').reverse().join('.'),
+	webroot = argv.webroot,
+	siteDir = parent + '/' + domainReverse + '/' + webroot,
+	vhostDir = '/etc/apache2/httpd.vhosts/',
+	createIndex = argv.index,
+	tpl = vhostDir + 'template.conf.tpl';
+
+
+// Create VHost file
+fs.readFile(tpl, 'utf8', function (err, data) {
+	if (err) {
+		return console.log(err);
+	}
+	data = data.replace(/%%SITE_DIR%%/g, parent);
+	data = data.replace(/%%DOMAIN%%/g, domain);
+	data = data.replace(/%%DOMAIN%%/g, domain);
+	data = data.replace(/%%WEBROOT%%/g, webroot);
+	data = data.replace(/%%DIRECTORY%%/g, domainReverse);
+
+	fs.writeFile(vhostDir + domainReverse + '.conf', data, 'utf8', function (err) {
+		if (err) return console.log(err);
+	});
+});
+
+// Create site directory
+fs.mkdir(siteDir, 0777, true, function (err) {
+	if (err) {
+		return console.log('Error creating directory:', err);
+	}
+	if(createIndex) {
+		fs.writeFile(siteDir + '/index.php','<?php phpinfo();', function(err){
+			if (err) {
+				console.log('error writing info file');
+			}
+		});
+	}
+});
+// Restart Apache
+
+var cp = exec('sudo apachectl restart', function (err) {
+	if (err) {
+		console.log('error restarting apache');
+	}
+});

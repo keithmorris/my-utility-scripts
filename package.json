@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "node-fs": "^0.1.7"
+  },
+  "devDependencies": {
+    "commander": "^2.3.0",
+    "minimist": "^1.1.0"
+  }
+}
