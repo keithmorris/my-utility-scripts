@@ -5,12 +5,11 @@
 /* jshint node:true*/
 "use strict";
 
-var _ = require('lodash'),
-	btoa = require('btoa'),
-	execSh = require('exec-sh'),
-	fs = require('fs-extra'),
-	hyperquest = require('hyperquest'),
-	argv = require('minimist')(process.argv.slice(2), {
+var _       = require('lodash'),
+	btoa    = require('btoa'),
+	execSh  = require('exec-sh'),
+	fs      = require('fs-extra'),
+	argv    = require('minimist')(process.argv.slice(2), {
 		alias: {
 			'project'   : ['p', 'proj'],
 			'repository': ['r', 'repo'],
@@ -18,10 +17,11 @@ var _ = require('lodash'),
 			'password'  : ['pass']
 		}
 	}),
-	prompt = require('prompt'),
+	path    = require('path'),
+	prompt  = require('prompt'),
 	request = require('request-json'),
-	series = require('async').series,
-	uuid = require('uuid');
+	series  = require('async').series,
+	uuid    = require('uuid');
 
 var promptSchema = {
 	properties: {
@@ -36,10 +36,10 @@ var promptSchema = {
 };
 
 var apiBaseUrl = 'https://stash.moxieinteractive.com/rest/api/1.0',
-	client = request.newClient(apiBaseUrl),
+	client     = request.newClient(apiBaseUrl),
 	apiCredentials;
 
-var project = argv.project || null,
+var project    = argv.project || null,
 	repository = argv.repository || null;
 
 var repositoryInfo;
@@ -77,7 +77,7 @@ function promptCredentials(cb) {
 
 function createProject(cb) {
 	//var requestUri = apiBaseUrl + '/projects/' + project;
-	client.get('/projects/' + project, function (err, res, body) {
+	client.get(path.join('/projects', project), function (err, res, body) {
 		if (body.errors) {
 
 			console.log("A project with that key does not exist so we'll create it.".red);
@@ -109,8 +109,8 @@ function createProject(cb) {
 function createRepository(cb) {
 	// check if repo already exists
 
-	var resourceUri = '/projects/' + project + '/repos/';
-	client.get(resourceUri + repository, function (err, res, body) {
+	var resourceUri = path.join('/projects', project, 'repos');
+	client.get(path.join(resourceUri, repository), function (err, res, body) {
 		if (body.errors) {
 			// repo doesn't exist so let's create it
 			var data = {
@@ -149,14 +149,14 @@ function initializeRepo(cb) {
 		'git branch develop',
 		'git push origin --all',
 		'git push origin --tags'
-	], {cwd: './' + dirName}, function () {
+	], {cwd: path.join('./', dirName)}, function () {
 		// delete temp directory
 		fs.removeSync(dirName);
 		// now set the default branch to be develop
 		var data = {
 			id: 'refs/heads/develop'
 		};
-		client.put('/projects/' + project + '/repos/' + repository + '/branches/default', data, function () {
+		client.put(path.join('/projects', project, 'repos', repository, 'branches/default'), data, function () {
 			cb();
 		});
 	});
