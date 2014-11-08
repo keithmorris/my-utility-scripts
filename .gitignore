@@ -1,5 +1,8 @@
 # Created by .gitignore support plugin (hsz.mobi)
 
+# do not commit creds.js as it contains sensitive data
+creds.js
+
 ### Node template
 # Logs
 logs
