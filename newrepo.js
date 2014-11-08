@@ -67,12 +67,21 @@ function validateParameters(cb) {
 	cb();
 }
 
+function setApiAuth(creds) {
+	client.setBasicAuth(creds.username, creds.password);
+	apiCredentials = "Basic " + btoa(creds.username + ":" + creds.password);
+}
+
 function promptCredentials(cb) {
-	prompt.get(promptSchema, function (err, results) {
-		client.setBasicAuth(results.username, results.password);
-		apiCredentials = "Basic " + btoa(results.username + ":" + results.password);
-		cb(null, "promptCredentialsComplete");
-	});
+	try {
+		setApiAuth(require('./creds'));
+		cb(null, "loadCredentialsComplete");
+	} catch (e) {
+		prompt.get(promptSchema, function (err, results) {
+			setApiAuth(results);
+			cb(null, "promptCredentialsComplete");
+		});
+	}
 }
 
 function createProject(cb) {
