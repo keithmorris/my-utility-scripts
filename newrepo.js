@@ -152,6 +152,7 @@ function initializeRepo(cb) {
 	execSh([
 		'git init .',
 		'touch .gitignore',
+        'echo "# ' + repository + '" > README.md',
 		'git add --all',
 		'git commit -m"initial commit"',
 		'git remote add origin ' + cloneUrl,
