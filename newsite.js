@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 "use strict";
+process.chdir(__dirname);
+
 var config = require('config').get('newsite'),
     argv = require('minimist')(process.argv.slice(2), {
         alias: {
@@ -89,7 +91,7 @@ function createSiteDirectory(done) {
 
 function restartApache(done) {
     console.log('Restarting Apache.');
-    var cp = exec('sudo apachectl restart', function (err) {
+    exec('sudo apachectl restart', function (err) {
         if (err) {
             console.log('error restarting apache');
         }
