@@ -8,7 +8,7 @@ module.exports = {
             webroot: '',
             index: false
         },
-        vhostConfDir: '/etc/apache2/httpd.vhosts/',
+        vhostConfDir: '/etc/apache2/vhosts/',
         vhostTemplateFile: 'vhostTemplate.conf',
         reverseDomainFormat: true
     }
