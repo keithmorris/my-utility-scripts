@@ -1,7 +1,11 @@
 {
+  "name": "keith-utility-scripts",
+  "description": "These are a collection of executable scripts that I use on a daily basis",
+  "private": true,
   "dependencies": {
     "config": "^1.12.0",
-    "node-fs": "^0.1.7"
+    "node-fs": "^0.1.7",
+    "q": "^1.4.1"
   },
   "devDependencies": {
     "async": "^0.9.0",
