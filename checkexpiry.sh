@@ -1,0 +1,1 @@
+echo | openssl s_client -connect www.bluegrassnet.com:443 2>/dev/null | openssl x509 -noout -dates
