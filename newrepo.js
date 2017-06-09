@@ -35,7 +35,7 @@ var promptSchema = {
 	}
 };
 
-var apiBaseUrl = 'https://stash.moxieinteractive.com/rest/api/1.0',
+var apiBaseUrl = 'https://stash.hugeinc.com/rest/api/1.0',
 	client     = request.newClient(apiBaseUrl),
 	apiCredentials;
 
